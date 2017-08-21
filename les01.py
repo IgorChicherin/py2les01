@@ -60,7 +60,7 @@ def image_data(dirname):
     # TODO дописать сравнение дат
     img_folder = os.path.join(os.path.curdir, dirname)
     images = os.listdir(img_folder)
-    img_dates = list()
+    img_dates = dict()
     for image in images:
         with open(os.path.join(img_folder, image), 'rb') as img_file:
             tags = exifread.process_file(img_file)
@@ -68,7 +68,7 @@ def image_data(dirname):
                 img_dates.append(str(tags['Image DateTime']).split(' ')[0])
             except KeyError:
                 print('Error: Image %s haven\'t date info' % (image))
-    return images
+    return min(img_dates)
 
 
 if __name__ == '__main__':
@@ -76,4 +76,4 @@ if __name__ == '__main__':
     print(write_file_utf(filename='utf-8', string='Hello World! (utf-8)'))
     print(write_binary_file(filename='binary', string='Hello World! (binary)'))
     print(write_latin_file(filename='latin', string='Hello World! (latin-1)'))
-    print(image_data('images'))
+    print('Минимальная дата: %s' % (image_data('images')))
