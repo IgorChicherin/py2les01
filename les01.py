@@ -1,5 +1,5 @@
 import os
-import pickle
+import exifread
 
 def write_file(string, filename):
     '''
@@ -24,7 +24,7 @@ def write_file_utf(string, filename):
     '''
     with open(os.path.join(os.path.curdir, filename), 'w+', encoding='utf-8') as file:
         file.write(string)
-    with open(os.path.join(os.path.curdir, filename), 'r') as file:
+    with open(os.path.join(os.path.curdir, filename), 'r', encoding='utf-8') as file:
         result = file.readline()
     return result
 
@@ -55,9 +55,15 @@ def write_latin_file(string, filename):
         result = file.readline()
     return result
 
-def image_date(filename):
+def image_data(dirname):
     # TODO *Определить, какой из jpg-файлов был создан раньше всех.
-    pass
+    img_folder = os.path.join(os.path.curdir, dirname)
+    images = os.listdir(img_folder)
+    for image in images:
+        with open(os.path.join(img_folder, image), 'rb') as img_file:
+            tags = exifread.process_file(img_file)
+            print(tags)
+    return images
 
 
 if __name__ == '__main__':
@@ -65,3 +71,4 @@ if __name__ == '__main__':
     print(write_file_utf(filename='utf-8', string='Hello World! (utf-8)'))
     print(write_binary_file(filename='binary', string='Hello World! (binary)'))
     print(write_latin_file(filename='latin', string='Hello World! (latin-1)'))
+    print(image_data('images'))
