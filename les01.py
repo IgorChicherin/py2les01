@@ -1,6 +1,7 @@
 import os
 import exifread
 
+
 def write_file(string, filename):
     '''
     Write file without encoding than read file
@@ -42,6 +43,7 @@ def write_binary_file(string, filename):
         result = file.readline()
     return result.decode('utf-8')
 
+
 def write_latin_file(string, filename):
     '''
     Write file with latin-1 encoding than read file
@@ -55,20 +57,26 @@ def write_latin_file(string, filename):
         result = file.readline()
     return result
 
+
 def image_data(dirname):
-    # TODO *Определить, какой из jpg-файлов был создан раньше всех.
-    # TODO дописать сравнение дат
+    '''
+    Finds the file with the minimum creation date
+    :param dirname: str
+    :return: tuple
+    '''
     img_folder = os.path.join(os.path.curdir, dirname)
     images = os.listdir(img_folder)
-    img_dates = dict()
+    img_dates = list()
     for image in images:
         with open(os.path.join(img_folder, image), 'rb') as img_file:
             tags = exifread.process_file(img_file)
             try:
                 img_dates.append(str(tags['Image DateTime']).split(' ')[0])
             except KeyError:
+                img_dates.append(None)
                 print('Error: Image %s haven\'t date info' % (image))
-    return min(img_dates)
+    result = min(dict(zip(images, img_dates)).items())
+    return result
 
 
 if __name__ == '__main__':
@@ -76,4 +84,4 @@ if __name__ == '__main__':
     print(write_file_utf(filename='utf-8', string='Hello World! (utf-8)'))
     print(write_binary_file(filename='binary', string='Hello World! (binary)'))
     print(write_latin_file(filename='latin', string='Hello World! (latin-1)'))
-    print('Минимальная дата: %s' % (image_data('images')))
+    print('Минимальная дата: %s у файла %s' % (image_data('images')[1], image_data('images')[0]))
